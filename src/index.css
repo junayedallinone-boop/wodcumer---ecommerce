@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #844025;
+  --color-primary-dark: #6d3420;
+  --color-ink: #2a0e17;
+  --color-bg: #f6f3e7;
+  --color-cream: #f7f2ec;
+  --color-sand: #f3eedd;
+  --color-divider: #d8d3ce;
+
+  --font-serif: "Tiro Gurmukhi", Georgia, serif;
+  --font-sans: "Cabin", system-ui, sans-serif;
+
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Page gutter: 100px on the 1600px design, scaling down on smaller screens */
+@utility container-x {
+  width: 100%;
+  max-width: 1600px;
+  margin-inline: auto;
+  padding-inline: 16px;
+  @media (width >= 48rem) {
+    padding-inline: 40px;
+  }
+  @media (width >= 80rem) {
+    padding-inline: 100px;
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer base {
+  html {
+    overflow-x: clip;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-bg font-sans text-ink;
+    overflow-x: clip; /* decorative blurs and bleeding carousels never cause sideways scroll */
+  }
+  ::selection {
+    @apply bg-primary text-white;
+  }
+  button {
+    cursor: pointer;
+  }
+}
+
+/* Shared button styles from the design.
+   Hover: a colour fill rises from the bottom with a curved top that flattens as it fills,
+   the label spaces out slightly and the button lifts. */
+@utility btn {
+  @apply relative isolate inline-flex items-center justify-center overflow-hidden px-5 py-4 text-base font-bold uppercase leading-5 tracking-normal transition-all duration-500 ease-smooth;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    z-index: -1;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    transform: translateY(102%);
+    transition:
+      transform 0.65s var(--ease-smooth),
+      border-radius 0.65s var(--ease-smooth);
+  }
+  &:hover {
+    letter-spacing: 0.04em;
+    transform: translateY(-2px);
+  }
+  &:hover::before {
+    border-radius: 0;
+    transform: translateY(0);
+  }
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
+@utility btn-primary {
+  @apply btn bg-primary text-white hover:shadow-[0_14px_30px_-12px_rgba(42,14,23,0.55)] before:bg-ink;
+}
+@utility btn-light {
+  @apply btn bg-bg text-primary hover:text-white hover:shadow-[0_14px_30px_-12px_rgba(0,0,0,0.45)] before:bg-primary;
+}
+@utility btn-outline {
+  @apply btn border border-white py-3 text-white hover:text-ink before:bg-white;
+}
+
+/* Text buttons: underline wipes out to the right, then back in from the left */
+@utility link-wipe {
+  @apply relative;
+  background: linear-gradient(currentColor, currentColor) no-repeat right bottom / 0% 1px;
+  transition: background-size 0.5s var(--ease-smooth);
+  &:hover {
+    background-position: left bottom;
+    background-size: 100% 1px;
+  }
+}
+@utility heading {
+  @apply font-serif text-[34px] leading-[1.1] tracking-[-0.03em] md:text-[48px];
+}
