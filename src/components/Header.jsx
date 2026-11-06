@@ -124,14 +124,14 @@ export default function Header() {
             </form>
           </div>
 
-          <div className="flex items-center lg:gap-[60px]">
-            <nav className="hidden items-center gap-6 lg:flex">
+          <div className="flex items-center lg:gap-8 xl:gap-[60px]">
+            <nav className="hidden items-center gap-4 lg:flex xl:gap-6">
               {nav.map((item) => (
                 <div key={item.label} className="group relative">
                   <NavLink
                     to={item.to}
                     className={({ isActive }) =>
-                      `relative flex items-center gap-1.5 py-2 text-[14px] font-medium tracking-[-0.01em] ${isActive ? 'text-primary' : ''}`
+                      `relative flex items-center gap-1.5 whitespace-nowrap py-2 text-[14px] font-medium tracking-[-0.01em] ${isActive ? 'text-primary' : ''}`
                     }
                   >
                     {item.label}

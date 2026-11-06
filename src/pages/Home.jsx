@@ -17,15 +17,23 @@ function Hero() {
 
   return (
     <section ref={ref} className="relative h-[560px] overflow-hidden md:h-[718px]">
-      <motion.img
-        src="/assets/hero.webp"
-        alt="Living room with beige sofas"
+      {/* Background video; the original photo shows while it loads and for reduced-motion users */}
+      <motion.video
+        src="/videos/hero.mp4"
+        poster="/assets/hero.webp"
+        aria-label="Living room with beige sofas"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
         style={{ y }}
         initial={{ scale: 1.12 }}
         animate={{ scale: 1 }}
         transition={{ duration: 2.2, ease }}
-        className="absolute inset-0 size-full object-cover object-bottom"
+        className="absolute inset-0 size-full object-cover object-bottom motion-reduce:hidden"
       />
+      <img src="/assets/hero.webp" alt="" className="absolute inset-0 hidden size-full object-cover object-bottom motion-reduce:block" />
       <div className="absolute inset-0 bg-[linear-gradient(245.8deg,rgba(132,64,37,0)_21.8%,rgba(132,64,37,0.4)_100%)]" />
       <div className="absolute left-[100px] top-[371px] h-[207px] w-[598px] bg-primary/70 blur-[150px]" />
 
