@@ -4,7 +4,8 @@ import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
 import AccordionItem from '../components/Accordion'
 import { PageTransition, Reveal, ease } from '../components/Motion'
 import { PageHeader } from '../components/Ui'
-import { faqs, shippingMethods } from '../data'
+import { faqs, localize, shippingMethods } from '../data'
+import { useStore } from '../store'
 
 const sections = {
   faq: {
@@ -43,6 +44,7 @@ const sections = {
 }
 
 export default function Help() {
+  useStore() // re-render when the currency changes
   const [params, setParams] = useSearchParams()
   const key = sections[params.get('tab')] ? params.get('tab') : 'faq'
   const [open, setOpen] = useState(0)
@@ -73,7 +75,7 @@ export default function Help() {
           <motion.div key={key} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4, ease }}>
             {items.map((f, i) => (
               <AccordionItem key={f.q} title={f.q} open={open === i} onToggle={() => setOpen(open === i ? -1 : i)} className="py-7" titleClassName="text-[18px] font-medium md:text-[20px]">
-                <p className="max-w-[836px] pt-4 leading-[1.6] opacity-90">{f.a}</p>
+                <p className="max-w-[836px] pt-4 leading-[1.6] opacity-90">{localize(f.a)}</p>
               </AccordionItem>
             ))}
           </motion.div>

@@ -162,7 +162,44 @@ export const dimensions = [
   ['Weight', '5.8 kg'],
 ]
 
-export const formatPrice = (n) => `$${n.toFixed(2)}`
+// Shipping regions shown in the top-bar dropdown. Prices are stored in USD and converted for display
+// with these fixed demo rates; checkout is charged in the selected currency.
+export const regions = [
+  { code: 'US', country: 'United States', currency: 'USD', rate: 1, locale: 'en-US' },
+  { code: 'NL', country: 'Netherlands', currency: 'EUR', rate: 0.92, locale: 'nl-NL' },
+  { code: 'DE', country: 'Germany', currency: 'EUR', rate: 0.92, locale: 'de-DE' },
+  { code: 'FR', country: 'France', currency: 'EUR', rate: 0.92, locale: 'fr-FR' },
+  { code: 'GB', country: 'United Kingdom', currency: 'GBP', rate: 0.79, locale: 'en-GB' },
+  { code: 'CA', country: 'Canada', currency: 'CAD', rate: 1.37, locale: 'en-CA' },
+  { code: 'AU', country: 'Australia', currency: 'AUD', rate: 1.52, locale: 'en-AU' },
+  { code: 'BD', country: 'Bangladesh', currency: 'BDT', rate: 120, locale: 'en-BD' },
+]
+
+export const languages = [
+  { code: 'en', label: 'English', short: 'En', flag: '/assets/flag-en.png', ready: true },
+  { code: 'nl', label: 'Nederlands', short: 'Nl' },
+  { code: 'fr', label: 'Français', short: 'Fr' },
+  { code: 'de', label: 'Deutsch', short: 'De' },
+  { code: 'bn', label: 'বাংলা', short: 'Bn' },
+]
+
+// The store sets this whenever the visitor picks a region, so every price re-renders in that currency
+let activeRegion = regions[0]
+const formatters = new Map()
+export const setActiveRegion = (code) => (activeRegion = regions.find((r) => r.code === code) ?? regions[0])
+export const getActiveRegion = () => activeRegion
+
+export const formatPrice = (usd, decimals = 2) => {
+  const { locale, currency, rate } = activeRegion
+  const key = `${locale}-${currency}-${decimals}`
+  if (!formatters.has(key)) {
+    formatters.set(key, new Intl.NumberFormat(locale, { style: 'currency', currency, minimumFractionDigits: decimals, maximumFractionDigits: decimals }))
+  }
+  return formatters.get(key).format(usd * rate)
+}
+
+// Converts USD amounts written inside copy ("free shipping over $230") to the active currency
+export const localize = (text) => text.replace(/\$(\d+(?:\.\d+)?)/g, (_, n) => formatPrice(Number(n), n.includes('.') ? 2 : 0))
 
 // Checkout rules — matches the "Free shipping over $230" and "SPRING70" messages in the design
 export const FREE_SHIPPING_OVER = 230

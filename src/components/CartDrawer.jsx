@@ -105,7 +105,7 @@ export default function CartDrawer() {
             {lines.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 text-center">
                 <p className="font-serif text-[30px] italic">Your cart is empty</p>
-                <p className="opacity-70">Find something you love — free shipping on orders over $230.</p>
+                <p className="opacity-70">Find something you love — free shipping on orders over {formatPrice(FREE_SHIPPING_OVER, 0)}.</p>
                 <Link to="/category/all" className="btn-primary">Shop all</Link>
               </div>
             ) : (

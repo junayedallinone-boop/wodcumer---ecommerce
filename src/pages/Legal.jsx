@@ -18,7 +18,7 @@ const docs = {
     updated: 'November 2026',
     sections: [
       ['Orders', 'All orders are subject to availability and confirmation of the order price. We’ll email you to confirm once your order is accepted.'],
-      ['Prices & payment', 'Prices are shown in USD and include applicable taxes. Payment is taken when your order is placed.'],
+      ['Prices & payment', 'Prices are set in USD and shown in the currency of the region you select, including applicable taxes. Payment is taken when your order is placed.'],
       ['Delivery', 'Delivery times are estimates. We’ll keep you updated by email if anything changes.'],
       ['Returns', 'You can return items within 90 days under our worry-free trial, as described in our Help centre.'],
       ['Warranty', 'Frames carry a 10-year warranty against manufacturing defects; upholstery is covered for 2 years.'],

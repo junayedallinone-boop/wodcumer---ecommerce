@@ -10,7 +10,7 @@ import { VideoTile } from '../components/Video'
 import { cardWidth } from './Home'
 import { Heart, QtyStepper } from '../components/Ui'
 import NotFound from './NotFound'
-import { bannerVideo, customerVideos, dimensions, faqs, features, formatPrice, getProduct, pdpGallery, productSwatches, products, reviews } from '../data'
+import { FREE_SHIPPING_OVER, bannerVideo, customerVideos, dimensions, faqs, features, formatPrice, getProduct, pdpGallery, productSwatches, products, reviews } from '../data'
 import { useStore } from '../store'
 
 function Gallery({ product }) {
@@ -162,7 +162,7 @@ function ProductInfo({ product }) {
             {product.stock <= 10 ? `Low stock — only ${product.stock} left` : `In stock — ${product.stock} left`}
           </span>
           <span className="flex items-center gap-1.5">
-            <img src="/assets/ic-truck.svg" alt="" className="size-6" /> Free shipping on orders over $230
+            <img src="/assets/ic-truck.svg" alt="" className="size-6" /> Free shipping on orders over {formatPrice(FREE_SHIPPING_OVER, 0)}
           </span>
         </div>
       </motion.div>
@@ -271,7 +271,7 @@ function WhyUs() {
 function VideoBanner() {
   return (
     <section className="h-[460px] md:h-[800px]">
-      <VideoTile video={bannerVideo} autoPlay large className="size-full">
+      <VideoTile video={bannerVideo} autoPlay large playButton={false} className="size-full">
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(270deg,rgba(42,14,23,0)_58%,rgba(42,14,23,0.16)_100%)]" />
       </VideoTile>
     </section>

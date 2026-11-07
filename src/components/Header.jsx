@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Bag, ChevronDown, Close, Menu, Search, User } from './Icons'
 import { ease } from './Motion'
 import { Heart } from './Ui'
-import { categories } from '../data'
+import { categories, formatPrice, languages, regions } from '../data'
 import { useStore } from '../store'
 
 const nav = [
@@ -59,22 +59,139 @@ function CountBadge({ n }) {
   )
 }
 
+// Small dropdown used by the region and language pickers in the top bar
+function TopMenu({ label, title, align = 'left', children }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+  const { pathname } = useLocation()
+
+  useEffect(() => setOpen(false), [pathname])
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e) => !ref.current?.contains(e.target) && setOpen(false)
+    const onKey = (e) => e.key === 'Escape' && setOpen(false)
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  return (
+    <div ref={ref} className="relative hidden sm:block">
+      <button
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1.5 text-white transition-opacity hover:opacity-80"
+      >
+        {label}
+        <ChevronDown className={`transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            role="menu"
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ duration: 0.25, ease }}
+            className={`absolute top-full z-[60] mt-2 w-[280px] origin-top bg-white py-3 normal-case tracking-normal text-ink shadow-[0_24px_50px_-18px_rgba(42,14,23,0.35)] ${
+              align === 'right' ? 'right-0' : 'left-0'
+            }`}
+          >
+            <p className="px-5 pb-2 text-[12px] font-semibold uppercase tracking-wide opacity-50">{title}</p>
+            {children(() => setOpen(false))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+const menuItem = (active) =>
+  `flex w-full items-center gap-3 px-5 py-2.5 text-left text-[14px] transition-colors hover:bg-bg ${active ? 'font-semibold text-primary' : ''}`
+
+const CodeBadge = ({ code }) => (
+  <span className="flex size-[18px] shrink-0 items-center justify-center rounded-full bg-ink/10 text-[8px] font-bold text-ink">{code}</span>
+)
+
 function AnnouncementBar() {
+  const { region, setRegion, language, showToast } = useStore()
+  const current = regions.find((r) => r.code === region) ?? regions[0]
+  const lang = languages.find((l) => l.code === language) ?? languages[0]
+
   return (
     <div className="bg-ink text-[14px] uppercase leading-[1.16] tracking-[-0.01em] text-bg">
       <div className="container-x flex h-[34px] items-center justify-between gap-4">
-        <button className="hidden items-center gap-1.5 text-white sm:flex">
-          NL (USD) <ChevronDown />
-        </button>
+        <TopMenu label={`${current.code} (${current.currency})`} title="Ship to & currency">
+          {(close) => (
+            <>
+              <ul className="max-h-[320px] overflow-y-auto">
+                {regions.map((r) => (
+                  <li key={r.code}>
+                    <button
+                      role="menuitemradio"
+                      aria-checked={r.code === region}
+                      onClick={() => {
+                        setRegion(r.code)
+                        close()
+                        showToast(`Shipping to ${r.country} — prices in ${r.currency}`)
+                      }}
+                      className={menuItem(r.code === region)}
+                    >
+                      <CodeBadge code={r.code} />
+                      <span className="flex-1">{r.country}</span>
+                      <span className="text-[13px] opacity-60">{r.currency}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <p className="mx-5 mt-2 border-t border-ink/10 pt-3 text-[12px] leading-[1.5] opacity-60">
+                Prices are converted from USD using demo exchange rates.
+              </p>
+            </>
+          )}
+        </TopMenu>
         <p className="mx-auto truncate sm:mx-0">
-          Weekend bonus: extra <b className="font-bold text-white">$70 off</b>*
+          Weekend bonus: extra <b className="font-bold text-white">{formatPrice(70, 0)} off</b>*
           <span className="mx-2 inline-block size-1 -translate-y-0.5 rounded-full bg-bg align-middle" />
           Code: <b className="font-bold text-white">SPRING70</b>
         </p>
-        <button className="hidden items-center gap-1.5 sm:flex">
-          <img src="/assets/flag-en.png" alt="" className="size-[18px] rounded-full object-cover" />
-          En <ChevronDown />
-        </button>
+        <TopMenu
+          align="right"
+          title="Language"
+          label={
+            <>
+              {lang.flag ? <img src={lang.flag} alt="" className="size-[18px] rounded-full object-cover" /> : <CodeBadge code={lang.short} />}
+              <span className="text-bg">{lang.short}</span>
+            </>
+          }
+        >
+          {(close) => (
+            <ul>
+              {languages.map((l) => (
+                <li key={l.code}>
+                  <button
+                    role="menuitemradio"
+                    aria-checked={l.code === language}
+                    aria-disabled={!l.ready}
+                    onClick={() => {
+                      close()
+                      if (!l.ready) showToast(`${l.label} is coming soon — the site is in English for now`)
+                    }}
+                    className={`${menuItem(l.code === language)} ${l.ready ? '' : 'opacity-60'}`}
+                  >
+                    {l.flag ? <img src={l.flag} alt="" className="size-[18px] rounded-full object-cover" /> : <CodeBadge code={l.short} />}
+                    <span className="flex-1">{l.label}</span>
+                    {!l.ready && <span className="rounded-full bg-sand px-2 py-0.5 text-[11px] font-medium">Coming soon</span>}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </TopMenu>
       </div>
     </div>
   )
@@ -88,7 +205,7 @@ export default function Header() {
   const [query, setQuery] = useState('')
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const { count, wishlist, user, openCart } = useStore()
+  const { count, wishlist, user, openCart, region, setRegion } = useStore()
   const search = (e) => {
     e.preventDefault()
     if (!query.trim()) return
@@ -199,6 +316,14 @@ export default function Header() {
                 <Link to={user ? '/account' : '/login'}>{user ? 'My account' : 'Log in / Register'}</Link>
                 <Link to="/wishlist">Wishlist ({wishlist.length})</Link>
                 <Link to="/help">Help centre</Link>
+                <label className="mt-2 flex flex-col gap-1.5 text-[13px] opacity-80">
+                  Ship to & currency
+                  <select value={region} onChange={(e) => setRegion(e.target.value)} className="h-11 border border-ink/15 bg-white px-3 text-[15px] opacity-100">
+                    {regions.map((r) => (
+                      <option key={r.code} value={r.code}>{`${r.country} (${r.currency})`}</option>
+                    ))}
+                  </select>
+                </label>
               </div>
             </motion.aside>
           </>

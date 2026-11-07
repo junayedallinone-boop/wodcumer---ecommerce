@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { FREE_SHIPPING_OVER, discountCodes, formatPrice } from '../data'
+import { FREE_SHIPPING_OVER, discountCodes, formatPrice, getActiveRegion, localize } from '../data'
 import { useStore } from '../store'
 
 // Totals panel shared by the cart page and checkout.
@@ -73,7 +73,7 @@ export default function OrderSummary({ shipping, showLines = false, children }) 
             <dd>−{formatPrice(discountAmount)}</dd>
           </div>
         )}
-        {discount && !discountAmount && <p className="text-[13px] opacity-70">{discountCodes[discount].label} — add more to qualify.</p>}
+        {discount && !discountAmount && <p className="text-[13px] opacity-70">{localize(discountCodes[discount].label)} — add more to qualify.</p>}
         <div className="flex justify-between">
           <dt>Shipping</dt>
           <dd>{shippingCost === null ? 'Calculated at checkout' : shippingCost === 0 ? 'Free' : formatPrice(shippingCost)}</dd>
@@ -81,7 +81,7 @@ export default function OrderSummary({ shipping, showLines = false, children }) 
         <div className="flex justify-between border-t border-ink/15 pt-4 text-[20px] font-semibold">
           <dt>Total</dt>
           <dd>
-            <span className="mr-2 text-[13px] font-normal opacity-60">USD</span>
+            <span className="mr-2 text-[13px] font-normal opacity-60">{getActiveRegion().currency}</span>
             {formatPrice(total)}
           </dd>
         </div>

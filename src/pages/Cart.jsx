@@ -7,7 +7,7 @@ import { CartLine, FreeShippingBar } from '../components/CartDrawer'
 import { PageTransition, Reveal } from '../components/Motion'
 import { EmptyState, PageHeader } from '../components/Ui'
 import { cardWidth } from './Home'
-import { newArrivals } from '../data'
+import { localize, newArrivals } from '../data'
 import { useStore } from '../store'
 
 export default function Cart() {
@@ -20,7 +20,7 @@ export default function Cart() {
         {lines.length === 0 ? (
           <EmptyState
             title="Your cart is empty"
-            text="Pieces you add will appear here. Free shipping on orders over $230."
+            text={localize('Pieces you add will appear here. Free shipping on orders over $230.')}
             action={<Link to="/category/all" className="btn-primary">Continue shopping</Link>}
           />
         ) : (

@@ -4,7 +4,8 @@ import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
 import ProductCard from '../components/ProductCard'
 import { ChevronDown } from '../components/Icons'
 import { PageTransition, Reveal, ease } from '../components/Motion'
-import { categories, categoryProducts } from '../data'
+import { categories, categoryProducts, localize } from '../data'
+import { useStore } from '../store'
 
 // Grid cells stagger in on load and scale/fade when filters change
 const cell = {
@@ -39,7 +40,7 @@ function Dropdown({ label, value, options, onChange, align = 'left', showValue =
     <div ref={ref} className="relative">
       <button onClick={() => setOpen(!open)} className="flex items-center gap-1 text-[14px] font-medium leading-[1.16] transition-colors hover:text-primary">
         {label}
-        {showValue && value && value !== 'All' && <span className="text-primary">: {value}</span>}
+        {showValue && value && value !== 'All' && <span className="text-primary">: {localize(value)}</span>}
         <ChevronDown className={`transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
       </button>
       <AnimatePresence>
@@ -60,7 +61,7 @@ function Dropdown({ label, value, options, onChange, align = 'left', showValue =
                   }}
                   className={`w-full px-4 py-2 text-left text-[14px] transition-colors hover:bg-bg ${value === o ? 'font-semibold text-primary' : ''}`}
                 >
-                  {o}
+                  {localize(o)}
                 </button>
               </li>
             ))}
@@ -85,6 +86,7 @@ const collectionFor = (slug) => {
 }
 
 export default function Category() {
+  useStore() // re-render when the currency changes
   const { slug = 'all' } = useParams()
   const [sort, setSort] = useState('Alphabetical: AZ')
   const [active, setActive] = useState({ Availability: 'All', Price: 'All', Color: 'All' })
@@ -115,7 +117,7 @@ export default function Category() {
         </Reveal>
         {(collection.intro || !base.length) && (
           <Reveal delay={0.1} as="p" className="mb-2 max-w-[640px] opacity-75">
-            {base.length ? collection.intro : `New ${collection.title.toLowerCase()} pieces are on their way — in the meantime, explore the full collection.`}
+            {base.length ? localize(collection.intro) : `New ${collection.title.toLowerCase()} pieces are on their way — in the meantime, explore the full collection.`}
           </Reveal>
         )}
         <Reveal delay={0.15} className="no-scrollbar mb-8 mt-5 flex gap-2 overflow-x-auto">

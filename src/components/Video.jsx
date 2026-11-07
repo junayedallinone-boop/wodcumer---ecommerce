@@ -109,7 +109,7 @@ export function PlayButton({ large = false, onClick }) {
 
 // Poster image that swaps to a silent looping preview on hover (or always, with `autoPlay`).
 // Clicking anywhere opens the full player.
-export function VideoTile({ video, className = '', autoPlay = false, large = false, children }) {
+export function VideoTile({ video, className = '', autoPlay = false, large = false, playButton = true, children }) {
   const open = useVideo()
   const ref = useRef(null)
   const [ready, setReady] = useState(false)
@@ -153,7 +153,16 @@ export function VideoTile({ video, className = '', autoPlay = false, large = fal
         />
       )}
       {children}
-      <PlayButton large={large} />
+      {/* On cards the button steps aside while the hover preview plays */}
+      {playButton && (
+        <span
+          className={`relative z-10 transition-all duration-500 ease-smooth ${
+            autoPlay ? '' : 'group-hover:pointer-events-none group-hover:scale-75 group-hover:opacity-0'
+          }`}
+        >
+          <PlayButton large={large} />
+        </span>
+      )}
     </div>
   )
 }

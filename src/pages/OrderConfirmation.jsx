@@ -38,7 +38,7 @@ export default function OrderConfirmation() {
           {[
             ['Ship to', <>{a.name}<br />{a.address}{a.apartment && `, ${a.apartment}`}<br />{a.postcode} {a.city}<br />{a.country}</>],
             ['Delivery', <>{order.shipping.name}<br /><span className="opacity-70">{order.shipping.eta}</span></>],
-            ['Payment', <>Card ending in {order.payment.last4}<br /><span className="opacity-70">{formatPrice(order.total)} USD</span></>],
+            ['Payment', <>Card ending in {order.payment.last4}<br /><span className="opacity-70">{formatPrice(order.total)}</span></>],
           ].map(([k, v]) => (
             <div key={k} className="bg-bg p-6">
               <p className="mb-2 text-[13px] uppercase opacity-60">{k}</p>

@@ -1,12 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { FREE_SHIPPING_OVER, discountCodes, getProduct, productSwatches } from './data'
+import { FREE_SHIPPING_OVER, discountCodes, getProduct, productSwatches, setActiveRegion } from './data'
 
 // Everything the shop remembers: cart, wishlist, signed-in customer and past orders.
 // Saved in this browser's localStorage so it survives refreshes (demo — no server).
 const StoreContext = createContext(null)
 const KEY = 'wodcumer-store-v1'
 
-const empty = { cart: [], wishlist: [], user: null, orders: [], discount: null }
+const empty = { cart: [], wishlist: [], user: null, orders: [], discount: null, region: 'US', language: 'en' }
 
 function load() {
   try {
@@ -27,6 +27,9 @@ export function StoreProvider({ children }) {
   const [state, setState] = useState(load)
   const [cartOpen, setCartOpen] = useState(false)
   const [toast, setToast] = useState(null)
+
+  // Set during render so every formatPrice() below this provider uses the chosen currency
+  setActiveRegion(state.region)
 
   useEffect(() => {
     try {
@@ -102,6 +105,8 @@ export function StoreProvider({ children }) {
     removeDiscount: () => update(() => ({ discount: null })),
     isWishlisted: (id) => state.wishlist.includes(id),
     toggleWishlist,
+    setRegion: (region) => update(() => ({ region })),
+    setLanguage: (language) => update(() => ({ language })),
     signIn: (user) => update(() => ({ user })),
     signOut: () => update(() => ({ user: null })),
     placeOrder: (details) => {
